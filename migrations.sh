@@ -5,14 +5,19 @@ docker run -d \
     cassandra
 
 echo "Waiting for Cassandra"
-echo "Sleep for 35s..."
-for i in {1..35}
+
+STATUS="..."
+while [ "$STATUS" != "running" ]
 do
-    echo -n '.'
-    sleep 1
+    STATUS=$(docker exec -it cassandra nodetool statusgossip | tr -d "\r\n")
+    echo "Status = $STATUS"
+    sleep 5
 done
+
+echo
 echo "Starting KONG..."
 docker ps | grep --color cassandra
+sleep 10
 
 docker run --rm \
     -e KONG_DATABASE=cassandra \
