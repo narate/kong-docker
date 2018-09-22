@@ -2,7 +2,7 @@
 docker run -d \
     --name cassandra \
     -v $(pwd)/cassandra_db:/var/lib/cassandra \
-    cassandra
+    cassandra:3.0
 
 echo "Waiting for Cassandra"
 
