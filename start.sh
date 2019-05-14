@@ -9,7 +9,6 @@ STATUS="starting"
 while [ "$STATUS" != "healthy" ]
 do
     STATUS=$(docker inspect --format {{.State.Health.Status}} kong-database)
-    #STATUS=$(docker-compose exec kong-database nodetool statusgossip |  tr -d "\r\n")
     echo "kong-database state = $STATUS"
     sleep 5
 done
