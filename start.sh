@@ -1,14 +1,27 @@
 #!/bin/bash
 
+echo "Starting kong-database..."
+
 docker-compose up -d kong-database
 
-STATUS="..."
-while [ "$STATUS" != "running" ]
+STATUS="starting"
+
+while [ "$STATUS" != "healthy" ]
 do
-    STATUS=$(docker-compose exec kong-database nodetool statusgossip |  tr -d "\r\n")
-    echo "kong-database status = $STATUS"
+    STATUS=$(docker inspect --format {{.State.Health.Status}} kong-database)
+    #STATUS=$(docker-compose exec kong-database nodetool statusgossip |  tr -d "\r\n")
+    echo "kong-database state = $STATUS"
     sleep 5
 done
 
-docker-compose up -d
-docker-compose logs -f
+
+echo "Run database migrations..."
+
+docker-compose up migrations
+
+echo "Starting kong..."
+
+docker-compose up -d kong
+
+echo "Kong admin running http://127.0.0.1:8001/"
+

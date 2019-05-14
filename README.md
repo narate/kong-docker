@@ -1,14 +1,9 @@
-KONG Docker (compose) Deployment
+KONG Docker Deployment (docker-compse)
 ---
 
-First run `migrations.sh` only the first time
+## Just run
 
 ```
-./migrations.sh
+time ./start.sh
 ```
 
-Start KONG
-
-```
-docker-compose up
-```

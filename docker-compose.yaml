@@ -3,6 +3,7 @@ version: '3.6'
 services:
   kong-database:
     image: cassandra:3.0
+    container_name: kong-database
     volumes:
       - ./cassandra_db:/var/lib/cassandra
     restart: always
@@ -12,10 +13,21 @@ services:
       timeout: 10s
       retries: 5
 
+  migrations:
+    depends_on:
+      - kong-database
+    image:  kong:latest
+    container_name: kong-migrations
+    environment:
+      KONG_DATABASE: cassandra
+      KONG_CASSANDRA_CONTACT_POINTS: kong-database
+    command: kong migrations bootstrap
+
   kong:
     depends_on:
       - kong-database
     image: kong:latest
+    container_name: kong
     restart: always
     environment:
       KONG_DATABASE: cassandra
