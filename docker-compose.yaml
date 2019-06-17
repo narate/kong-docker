@@ -46,8 +46,6 @@ services:
       - 80:8000
       - 443:8443
       - 127.0.0.1:8001:8001
-    volumes:
-      - ./conf.d:/etc/nginx/conf.d
   mongo:
     image: mongo
     restart: always
