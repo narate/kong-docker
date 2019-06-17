@@ -37,7 +37,11 @@ services:
       KONG_PG_HOST: kong-database
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_NGINX_HTTP_RESOLVER: 8.8.8.8
-      KONG_NGINX_PROXY_INCLUDE: "/etc/nginx/conf.d/real_ip.conf"
+      KONG_PROXY_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_ERROR_LOG: "/dev/stderr"
+      KONG_TRUSTED_IPS: "0.0.0.0/0,::/0"
+      KONG_REAL_IP_RECURSIVE: "on"
+      KONG_LOG_LEVEL: debug
     ports:
       - 80:8000
       - 443:8443
