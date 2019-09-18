@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.7'
 
 services:
   kong-database:
@@ -41,24 +41,25 @@ services:
       KONG_ADMIN_ERROR_LOG: "/dev/stderr"
       KONG_TRUSTED_IPS: "0.0.0.0/0,::/0"
       KONG_REAL_IP_RECURSIVE: "on"
-      KONG_LOG_LEVEL: debug
     ports:
       - 80:8000
       - 443:8443
-      - 127.0.0.1:8001:8001
+
   mongo:
     image: mongo
     restart: always
     container_name: konga_mongo
     volumes:
       - ./mongo_data:/data/db
+
   konga:
     image: pantsel/konga
     container_name: konga
+    restart: always
     environment:
       DB_ADAPTER: mongo
       DB_HOST: mongo
     depends_on:
       - mongo
     ports:
-      - 127.0.0.1:1337:1337
+      - 1337:1337
