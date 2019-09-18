@@ -1,0 +1,17 @@
+_format_version: '1.1'
+
+services:
+- name: kong
+  url: http://kong/
+  routes:
+  - name: kong
+    paths:
+    - /
+
+upstreams:
+- name: kong
+  targets:
+  - target: kong1:8000
+    weight: 100
+  - target: kong2:8000
+    weight: 100
