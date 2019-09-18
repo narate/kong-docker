@@ -1,97 +1,15 @@
 version: '3.7'
 services:
-  c1.kong.db:
-    image: cassandra
-    restart: always
-    container_name: c1.kong.db
-    environment:
-      - CASSANDRA_LISTEN_ADDRESS=c1.kong.db
-      - CASSANDRA_RPC_ADDRESS=c1.kong.db
-      - CASSANDRA_CLUSTER_NAME=KONG
-      - CASSANDRA_DC=KONG-DC1
-      - CASSANDRA_RACK=kong-rack0
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-    healthcheck:
-      test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - ./data/c1:/var/lib/cassandra
-  
-  c2.kong.db:
-    image: cassandra
-    restart: always
-    container_name: c2.kong.db
-    environment:
-      - CASSANDRA_LISTEN_ADDRESS=c2.kong.db
-      - CASSANDRA_RPC_ADDRESS=c2.kong.db
-      - CASSANDRA_SEEDS=c1.kong.db
-      - CASSANDRA_CLUSTER_NAME=KONG
-      - CASSANDRA_DC=KONG-DC1
-      - CASSANDRA_RACK=kong-rack0
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-    healthcheck:
-      test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - ./data/c2:/var/lib/cassandra
-
-  migrations:
-    depends_on:
-      - c1.kong.db
-      - c2.kong.db
-    image:  kong:latest
-    container_name: kong-migrations
-    environment:
-      - KONG_DATABASE=cassandra
-      - KONG_CASSANDRA_CONTACT_POINTS=c1.kong.db,c2.kong.db
-    command: kong migrations bootstrap -vv
-
-  kong1:
-    depends_on:
-      - c1.kong.db
-      - c2.kong.db
-    image: kong:latest
-    container_name: kong1
-    restart: always
-    environment:
-      - KONG_DATABASE=cassandra
-      - KONG_CASSANDRA_CONTACT_POINTS=c1.kong.db,c2.kong.db
-      - KONG_ADMIN_LISTEN=0.0.0.0:8001
-      - KONG_NGINX_HTTP_RESOLVER=8.8.8.8
-      - KONG_PROXY_ERROR_LOG=/dev/stderr
-      - KONG_ADMIN_ERROR_LOG=/dev/stderr
-      - KONG_TRUSTED_IPS=0.0.0.0/0,::/0
-      - KONG_REAL_IP_RECURSIVE=on
-
-  kong2:
-    depends_on:
-      - c1.kong.db
-      - c2.kong.db
-    image: kong:latest
-    container_name: kong2
-    restart: always
-    environment:
-      - KONG_DATABASE=cassandra
-      - KONG_CASSANDRA_CONTACT_POINTS=c1.kong.db,c2.kong.db
-      - KONG_ADMIN_LISTEN=0.0.0.0:8001
-      - KONG_NGINX_HTTP_RESOLVER=8.8.8.8
-      - KONG_PROXY_ERROR_LOG=/dev/stderr
-      - KONG_ADMIN_ERROR_LOG=/dev/stderr
-      - KONG_TRUSTED_IPS=0.0.0.0/0,::/0
-      - KONG_REAL_IP_RECURSIVE=on
-
-  proxy:
+  kong-db-less:
     image: kong:latest
     restart: always
-    container_name: proxy
+    container_name: kong-db-less
     environment:
       - KONG_DATABASE=off
       - KONG_DECLARATIVE_CONFIG=/etc/kong/conf.d/kong.yml
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
+      - KONG_LOG_LEVEL=debug
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
     volumes:
       - ./conf.d:/etc/kong/conf.d
     ports:
@@ -99,21 +17,9 @@ services:
       - 443:8443
       - 8001:8001
 
-  mongo:
-    image: mongo
-    restart: always
-    container_name: konga_mongo
+  config-init:
+    image: kong:latest
+    working_dir: /etc/kong/conf.d
     volumes:
-      - ./mongo_data:/data/db
-
-  konga:
-    image: pantsel/konga
-    container_name: konga
-    restart: always
-    environment:
-      - DB_ADAPTER=mongo
-      - DB_HOST=mongo
-    depends_on:
-      - mongo
-    ports:
-      - 1337:1337
+      - ./conf.d:/etc/kong/conf.d
+    command: kong config init kong.yml -vv

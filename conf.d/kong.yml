@@ -1,17 +1,8 @@
-_format_version: '1.1'
-
+_format_version: "1.1"
 services:
-- name: kong
-  url: http://kong/
+- name: httpbin
+  url: http://httpbin.org/
   routes:
-  - name: kong
+  - name: httpbin-route
     paths:
-    - /
-
-upstreams:
-- name: kong
-  targets:
-  - target: kong1:8000
-    weight: 100
-  - target: kong2:8000
-    weight: 100
+    - "/"
