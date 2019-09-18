@@ -6,7 +6,7 @@ services:
     container_name: kong-database
     environment:
       - POSTGRES_USER=kong
-      - POSTGRES_DB= kong
+      - POSTGRES_DB=kong
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     restart: always
@@ -43,6 +43,7 @@ services:
       - KONG_REAL_IP_RECURSIVE=on
     ports:
       - 80:8000
+      - 8001:8001
       - 443:8443
 
   mongo:
