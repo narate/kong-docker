@@ -41,6 +41,11 @@ services:
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
       - KONG_TRUSTED_IPS=0.0.0.0/0,::/0
       - KONG_REAL_IP_RECURSIVE=on
+      - KONG_PLUGINS=bundled,hello
+      - KONG_LUA_PACKAGE_PATH=/etc/kong/plugins/hello/?.lua;;
+      - KONG_LOG_LEVEL=debug
+    volumes:
+      - ./plugins/hello:/etc/kong/plugins/hello
     ports:
       - 80:8000
       - 8001:8001
