@@ -1,0 +1,19 @@
+_format_version: '1.1'
+
+services:
+- name: kong-dp
+  url: http://kong-dp/
+  routes:
+  - name: kong-dp
+    paths:
+    - /
+
+upstreams:
+- name: kong-dp
+  targets:
+  - target: kong-dp1:8000
+    weight: 100
+  - target: kong-dp2:8000
+    weight: 100
+  - target: kong-dp3:8000
+    weight: 100

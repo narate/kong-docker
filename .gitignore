@@ -2,3 +2,4 @@
 *_data
 cassandra_db
 data
+certs/*

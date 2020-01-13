@@ -16,35 +16,132 @@ services:
       timeout: 5s
       retries: 5
 
+  gen_cert:
+    image: kong:2.0.0rc1
+    working_dir: /certs
+    container_name: gen_cert
+    command: kong hybrid gen_cert --v
+    environment:
+      - TZ=Asia/Bangkok
+    volumes:
+      - ./certs:/certs
+
   migrations:
     depends_on:
       - kong-database
-    image: kong:latest
+    image: kong:2.0.0rc1
     container_name: kong-migrations
     environment:
+      - TZ=Asia/Bangkok
       - KONG_DATABASE=postgres
       - KONG_PG_HOST=kong-database
     command: kong migrations bootstrap -v
 
-  kong:
+  kong-cp:
     depends_on:
       - kong-database
-    image: kong:latest
-    container_name: kong
+    image: kong:2.0.0rc1
+    container_name: kong-cp
     restart: always
+    hostname: kong-cp
     environment:
+      - TZ=Asia/Bangkok
+      - KONG_ROLE=control_plane
+      - KONG_CLUSTER_CERT=/certs/cluster.crt
+      - KONG_CLUSTER_CERT_KEY=/certs/cluster.key
       - KONG_DATABASE=postgres
       - KONG_PG_HOST=kong-database
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
-      - KONG_NGINX_HTTP_RESOLVER=8.8.8.8
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
-      - KONG_TRUSTED_IPS=0.0.0.0/0,::/0
-      - KONG_REAL_IP_RECURSIVE=on
+    command: kong start
+    volumes:
+      - ./certs:/certs
+    ports:
+      - 8001:8001
+
+  kong-dp1:
+    image: kong:2.0.0rc1
+    container_name: kong-dp1
+    restart: always
+    hostname: kong-dp1
+    environment:
+      - TZ=Asia/Bangkok
+      - KONG_ROLE=data_plane
+      - KONG_CLUSTER_CONTROL_PLANE=kong-cp:8005
+      - KONG_CLUSTER_CERT=/certs/cluster.crt
+      - KONG_CLUSTER_CERT_KEY=/certs/cluster.key
+      - KONG_LUA_SSL_TRUSTED_CERTIFICATE=/certs/cluster.crt
+      - KONG_DATABASE=off
+      - KONG_STATUS_LISTEN=0.0.0.0:9123
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+    command: kong start
+    volumes:
+      - ./certs:/certs
+    ports:
+      - 18000:8000
+      - 19123:9123
+
+  kong-dp2:
+    image: kong:2.0.0rc1
+    container_name: kong-dp2
+    restart: always
+    hostname: kong-dp2
+    environment:
+      - TZ=Asia/Bangkok
+      - KONG_ROLE=data_plane
+      - KONG_CLUSTER_CONTROL_PLANE=kong-cp:8005
+      - KONG_CLUSTER_CERT=/certs/cluster.crt
+      - KONG_CLUSTER_CERT_KEY=/certs/cluster.key
+      - KONG_LUA_SSL_TRUSTED_CERTIFICATE=/certs/cluster.crt
+      - KONG_DATABASE=off
+      - KONG_STATUS_LISTEN=0.0.0.0:9123
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+    command: kong start
+    volumes:
+      - ./certs:/certs
+    ports:
+      - 28000:8000
+      - 29123:9123
+
+  kong-dp3:
+    image: kong:2.0.0rc1
+    container_name: kong-dp3
+    restart: always
+    hostname: kong-dp3
+    environment:
+      - TZ=Asia/Bangkok
+      - KONG_ROLE=data_plane
+      - KONG_CLUSTER_CONTROL_PLANE=kong-cp:8005
+      - KONG_CLUSTER_CERT=/certs/cluster.crt
+      - KONG_CLUSTER_CERT_KEY=/certs/cluster.key
+      - KONG_LUA_SSL_TRUSTED_CERTIFICATE=/certs/cluster.crt
+      - KONG_DATABASE=off
+      - KONG_STATUS_LISTEN=0.0.0.0:9123
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+    command: kong start
+    volumes:
+      - ./certs:/certs
+    ports:
+      - 38000:8000
+      - 39123:9123
+
+  kong-lb:
+    image: kong:2.0.0rc1
+    restart: always
+    container_name: kong-lb
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/etc/kong/conf.d/kong.yml
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001
+      - KONG_LOG_LEVEL=debug
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+    volumes:
+      - ./conf.d:/etc/kong/conf.d
     ports:
       - 80:8000
-      - 8001:8001
       - 443:8443
+      - 48001:8001
 
   mongo:
     image: mongo
