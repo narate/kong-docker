@@ -54,7 +54,6 @@ services:
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
-    command: kong start
     volumes:
       - ./certs:/certs
     ports:
@@ -75,7 +74,6 @@ services:
       - KONG_DATABASE=off
       - KONG_STATUS_LISTEN=0.0.0.0:9123
       - KONG_PROXY_ERROR_LOG=/dev/stderr
-    command: kong start
     volumes:
       - ./certs:/certs
     ports:
@@ -97,7 +95,6 @@ services:
       - KONG_DATABASE=off
       - KONG_STATUS_LISTEN=0.0.0.0:9123
       - KONG_PROXY_ERROR_LOG=/dev/stderr
-    command: kong start
     volumes:
       - ./certs:/certs
     ports:
@@ -119,7 +116,6 @@ services:
       - KONG_DATABASE=off
       - KONG_STATUS_LISTEN=0.0.0.0:9123
       - KONG_PROXY_ERROR_LOG=/dev/stderr
-    command: kong start
     volumes:
       - ./certs:/certs
     ports:
