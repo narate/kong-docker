@@ -5,6 +5,7 @@ services:
     image: postgres:9.6
     container_name: kong-database
     environment:
+      - TZ=Asia/Bangkok
       - POSTGRES_USER=kong
       - POSTGRES_DB=kong
     volumes:
@@ -17,7 +18,7 @@ services:
       retries: 5
 
   gen_cert:
-    image: kong:2.0.0rc1
+    image: kong
     working_dir: /certs
     container_name: gen_cert
     command: kong hybrid gen_cert --v
@@ -29,7 +30,7 @@ services:
   migrations:
     depends_on:
       - kong-database
-    image: kong:2.0.0rc1
+    image: kong
     container_name: kong-migrations
     environment:
       - TZ=Asia/Bangkok
@@ -40,7 +41,7 @@ services:
   kong-cp:
     depends_on:
       - kong-database
-    image: kong:2.0.0rc1
+    image: kong
     container_name: kong-cp
     restart: always
     hostname: kong-cp
@@ -60,7 +61,7 @@ services:
       - 8001:8001
 
   kong-dp1:
-    image: kong:2.0.0rc1
+    image: kong
     container_name: kong-dp1
     restart: always
     hostname: kong-dp1
@@ -81,7 +82,7 @@ services:
       - 19123:9123
 
   kong-dp2:
-    image: kong:2.0.0rc1
+    image: kong
     container_name: kong-dp2
     restart: always
     hostname: kong-dp2
@@ -102,7 +103,7 @@ services:
       - 29123:9123
 
   kong-dp3:
-    image: kong:2.0.0rc1
+    image: kong
     container_name: kong-dp3
     restart: always
     hostname: kong-dp3
@@ -123,7 +124,7 @@ services:
       - 39123:9123
 
   kong-lb:
-    image: kong:2.0.0rc1
+    image: kong
     restart: always
     container_name: kong-lb
     environment:

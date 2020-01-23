@@ -1,6 +1,10 @@
 KONG Docker Deployment (docker-compse)
 ---
 
+# WARNING !
+
+**KONG 2.0.0+ Only**
+
 ## Just run
 
 ```
