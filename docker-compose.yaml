@@ -45,7 +45,13 @@ services:
     ports:
       - 80:8000
       - 8001:8001
-      - 443:8443
+      - 443:8443 
+    healthcheck:
+      test: ["CMD", "wget", "-O-", "http://127.0.0.1:8001"]
+      interval: 5s
+      timeout: 2s
+      retries: 15
+    
 
   mongo:
     image: mongo
