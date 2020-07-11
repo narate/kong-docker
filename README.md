@@ -30,3 +30,7 @@ docker-compose up -d kong
 **Now Kong is Running**
 - Kong Admin API http://127.0.0.1:8001
 - Kong Proxy http://127.0.0.1
+
+## Postman Admin API
+[Kong CE Admin API V2.0](https://documenter.getpostman.com/view/10587735/SzS7QS2c?version=latest#b5c37285-0e71-411a-b44d-f06fea8e6b24)
+
