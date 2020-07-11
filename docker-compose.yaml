@@ -7,7 +7,7 @@ services:
     environment:
       - POSTGRES_USER=kong
       - POSTGRES_DB=kong
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=kong
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     restart: always
