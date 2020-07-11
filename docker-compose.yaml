@@ -20,7 +20,7 @@ services:
   migrations:
     depends_on:
       - kong-database
-    image: kong:latest
+    image: kong:2.0.4
     container_name: kong-migrations
     environment:
       - KONG_DATABASE=postgres
@@ -30,7 +30,7 @@ services:
   kong:
     depends_on:
       - kong-database
-    image: kong:latest
+    image: kong:2.0.4
     container_name: kong
     restart: always
     environment:
