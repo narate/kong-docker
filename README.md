@@ -1,4 +1,4 @@
-# KONG Docker Deployment with docker-compse
+# Kong deployment with docker and docker-compse
 ---
 
 Kong API Gateway deployment with docker and docker-compose
