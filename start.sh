@@ -23,4 +23,11 @@ echo "Starting kong..."
 docker-compose up -d kong
 
 echo "Kong admin running http://127.0.0.1:8001/"
+echo "Kong proxy running http://127.0.0.1/"
+
+echo "Starting konga..."
+
+docker-compose up -d mongo konga
+
+echo "Konga running http://127.0.0.1:1337/"
 
