@@ -8,10 +8,38 @@ Kong API Gateway deployment with docker and docker-compose
 
 This deployment is production ready.
 
+## Change Default value
+
+Copy `default.env` to `.env`
+
+```
+cp default.env .env
+```
+
+then edit the `.env` file to change default value
+
+Default values
+
+| Variable name | Defaule value |
+|---------------|---------------|
+| POSTGRES_VERSION  | 13-alpine |
+| POSTGRES_USER     | kong |
+| POSTGRES_PASSWORD | kong |
+| POSTGRES_DB       | kong |
+| KONG_VERSION      | 2.2 |
+| KONG_ADMIN_LISTEN | 0.0.0.0:8001 |
+| KONG_PROXY_LISTEN | 0.0.0.0:8000, 0.0.0.0:8443 ssl http2 |
+| KONG_NGINX_HTTP_RESOLVER | 8.8.8.8 |
+| KONG_PG_HOST      | kong-database |
+| KONG_PG_USER      | kong == `env POSTGRES_USER` |
+| KONG_PG_PASSWORD  | kong == `env POSTGRES_PASSWORD`|
+| KONG_PG_DATABASE  | kong == `env POSTGRES_DB`   |
+
+
 ## Quick start
 
 ```
-time ./start.sh
+time ./quick-start.sh
 ```
 
 ## Deploy Kong step by step
@@ -25,7 +53,7 @@ docker-compose up -d kong-database
 ### Run kong-database migrations
 
 ```
-docker-compose up migrations
+docker-compose run --rm kong kong migrations bootstrap --vv
 ```
 
 ### Start Kong
@@ -42,7 +70,7 @@ docker-compose up -d kong
 ### Start Konga
 
 ```
-docker-compose up -d mongo konga
+docker-compose up -d konga
 ```
 
 **Now Konga is running**

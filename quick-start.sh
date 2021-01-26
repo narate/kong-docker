@@ -14,9 +14,9 @@ do
 done
 
 
-echo "Run database migrations..."
+echo "Running database migrations..."
 
-docker-compose up migrations
+docker-compose run --rm kong kong migrations bootstrap --vv
 
 echo "Starting kong..."
 
@@ -26,8 +26,5 @@ echo "Kong admin running http://127.0.0.1:8001/"
 echo "Kong proxy running http://127.0.0.1/"
 
 echo "Starting konga..."
-
-docker-compose up -d mongo konga
-
+docker-compose up -d konga
 echo "Konga running http://127.0.0.1:1337/"
-

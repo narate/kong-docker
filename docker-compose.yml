@@ -2,12 +2,12 @@ version: '3.7'
 
 services:
   kong-database:
-    image: postgres:12-alpine
+    image: postgres:${POSTGRES_VERSION:-latest}
     container_name: kong-database
     environment:
-      - POSTGRES_USER=kong
-      - POSTGRES_DB=kong
-      - POSTGRES_PASSWORD=kong
+      - POSTGRES_USER=${POSTGRES_USER:-kong}
+      - POSTGRES_DB=${POSTGRES_DB:-kong}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-kong}
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     restart: always
@@ -17,34 +17,21 @@ services:
       timeout: 5s
       retries: 5
 
-  migrations:
-    depends_on:
-      - kong-database
-    image: kong
-    container_name: kong-migrations
-    environment:
-      - KONG_DATABASE=postgres
-      - KONG_PG_HOST=kong-database
-      - KONG_PG_DATABASE=kong
-      - KONG_PG_USER=kong
-      - KONG_PG_PASSWORD=kong
-    command: kong migrations bootstrap -v
-
   kong:
     depends_on:
       - kong-database
-    image: kong
+    image: kong:${KONG_VERSION:-latest}
     container_name: kong
     restart: always
     environment:
       - KONG_DATABASE=postgres
-      - KONG_PG_HOST=kong-database
-      - KONG_PG_DATABASE=kong
-      - KONG_PG_USER=kong
-      - KONG_PG_PASSWORD=kong
-      - KONG_ADMIN_LISTEN=0.0.0.0:8001
-      - KONG_PROXY_LISTEN=0.0.0.0:8000, 0.0.0.0:8443 ssl http2
-      - KONG_NGINX_HTTP_RESOLVER=8.8.8.8
+      - KONG_PG_HOST=${KONG_PG_HOST:-kong-database}
+      - KONG_PG_DATABASE=${POSTGRES_DB:-kong}
+      - KONG_PG_USER=${POSTGRES_USER:-kong}
+      - KONG_PG_PASSWORD=${POSTGRES_PASSWORD:-kong}
+      - KONG_ADMIN_LISTEN=${KONG_ADMIN_LISTEN:-127.0.0.1:8001}
+      - KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN:-0.0.0.0:8000, 0.0.0.0:8443 ssl http2}
+      - KONG_NGINX_HTTP_RESOLVER=${KONG_NGINX_HTTP_RESOLVER:-8.8.8.8}
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
       - KONG_TRUSTED_IPS=0.0.0.0/0,::/0
@@ -58,22 +45,18 @@ services:
       interval: 5s
       timeout: 2s
       retries: 15
-
-  mongo:
-    image: mongo
-    restart: always
-    container_name: konga_mongo
-    volumes:
-      - ./mongo_data:/data/db
-
+    
+  # https://github.com/pantsel/konga/issues/462#issuecomment-633209833
   konga:
     image: pantsel/konga
     container_name: konga
     restart: always
     environment:
-      DB_ADAPTER: mongo
-      DB_HOST: mongo
-    depends_on:
-      - mongo
+      # For use build-in filesystem db,
+      # Konga creator said `I've done it with no problems on production environments.`
+      # But the default `sails-disk` adapter is not designed for use as a production database;
+      - NODE_ENV=development
     ports:
       - 127.0.0.1:1337:1337
+    volumes:
+      - ./konga_data:/app/kongadata
