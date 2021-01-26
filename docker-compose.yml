@@ -24,6 +24,7 @@ services:
     container_name: kong
     restart: always
     environment:
+      - TZ=${TZ:-Asia/Bangkok}
       - KONG_DATABASE=postgres
       - KONG_PG_HOST=${KONG_PG_HOST:-kong-database}
       - KONG_PG_DATABASE=${POSTGRES_DB:-kong}
