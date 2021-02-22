@@ -32,7 +32,6 @@ services:
       - KONG_PG_PASSWORD=${POSTGRES_PASSWORD:-kong}
       - KONG_ADMIN_LISTEN=${KONG_ADMIN_LISTEN:-127.0.0.1:8001}
       - KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN:-0.0.0.0:8000, 0.0.0.0:8443 ssl http2}
-      - KONG_STATUS_LISTEN=127.0.0.1:8100
       - KONG_NGINX_HTTP_RESOLVER=${KONG_NGINX_HTTP_RESOLVER:-8.8.8.8}
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
@@ -43,7 +42,7 @@ services:
       - 443:8443 
       - 127.0.0.1:8001:8001
     healthcheck:
-      test: ["CMD", "wget", "-O-", "http://127.0.0.1:8100/status"]
+      test: ["CMD", "kong", "health"]
       interval: 5s
       timeout: 2s
       retries: 15
