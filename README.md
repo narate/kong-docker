@@ -87,6 +87,33 @@ ssh -L 1337:127.0.0.1:1337 username@kong.example.com
 
 Now you can access konga on [localhost](http://localhost:1337)
 
+
+### Upgrading Kong version
+
+> **WARNING** : This may take some downtime to start a new Kong version.
+
+1. Change `KONG_VERSION` in `.env` file to a newer version.
+
+	> If running kong version 2.2 change to 2.3 (or 2.3.0). [Suggested upgrade path](https://github.com/Kong/kong/blob/master/UPGRADE.md)
+
+2. Run migrations upgrade
+
+	```
+	docker-compose run --rm kong kong migrations up --vv
+	```
+
+3. Confirm finish migrations upgrade
+
+	```
+	docker-compose run --rm kong kong migrations finish --vv
+	```
+	
+4. Start new Kong version
+
+	```
+	docker-compose up -d kong
+	```
+
 ### Postman Admin API
 [Kong CE Admin API V2.0](https://documenter.getpostman.com/view/10587735/SzS7QS2c?version=latest#b5c37285-0e71-411a-b44d-f06fea8e6b24)
 
