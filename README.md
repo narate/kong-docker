@@ -1,4 +1,4 @@
-# KONG Docker Deployment with docker-compse
+# Kong Docker deployment with docker-compose
 ---
 
 Kong API Gateway deployment with docker and docker-compose
@@ -8,7 +8,7 @@ Kong API Gateway deployment with docker and docker-compose
 
 This deployment is production ready.
 
-## Change Default value
+## Change default value
 
 Copy `default.env` to `.env`
 
@@ -16,11 +16,10 @@ Copy `default.env` to `.env`
 cp default.env .env
 ```
 
-then edit the `.env` file to change default value
+then edit the `.env` file to change default values.
 
-Default values
 
-| Variable name | Defaule value |
+| Variable name | Default value |
 |---------------|---------------|
 | POSTGRES_VERSION  | 13-alpine |
 | POSTGRES_USER     | kong |
@@ -79,7 +78,7 @@ docker-compose up -d konga
 
 ### Acccess Konga securely
 
-If you deploy Kong on remote host we can access konga via ssh tunnel
+If you deploy Kong on a remote host we can access Konga via ssh tunnel
 
 ```
 ssh -L 1337:127.0.0.1:1337 username@kong.example.com
