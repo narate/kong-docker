@@ -37,10 +37,13 @@ services:
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
       - KONG_TRUSTED_IPS=0.0.0.0/0,::/0
       - KONG_REAL_IP_RECURSIVE=on
+      - KONG_ADMIN_GUI_PATH=/manager
+      - KONG_ADMIN_GUI_URL=http://127.0.0.1:8002/manager
     ports:
-      - 80:8000
+      - 8000:8000
       - 443:8443 
       - 127.0.0.1:8001:8001
+      - 127.0.0.1:8002:8002
     healthcheck:
       test: ["CMD", "kong", "health"]
       interval: 5s
