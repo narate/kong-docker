@@ -31,16 +31,19 @@ services:
       - KONG_PG_USER=${POSTGRES_USER:-kong}
       - KONG_PG_PASSWORD=${POSTGRES_PASSWORD:-kong}
       - KONG_ADMIN_LISTEN=${KONG_ADMIN_LISTEN:-127.0.0.1:8001}
-      - KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN:-0.0.0.0:8000, 0.0.0.0:8443 ssl http2}
+      - KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN:-0.0.0.0:8000, 0.0.0.0:8001, 0.0.0.0:8443 ssl http2}
       - KONG_NGINX_HTTP_RESOLVER=${KONG_NGINX_HTTP_RESOLVER:-8.8.8.8}
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
       - KONG_TRUSTED_IPS=0.0.0.0/0,::/0
       - KONG_REAL_IP_RECURSIVE=on
+      - KONG_ADMIN_GUI_PATH=/manager
+      - KONG_ADMIN_GUI_URL=http://127.0.0.1:8002/manager
     ports:
-      - 80:8000
+      - 8000:8000
       - 443:8443 
       - 127.0.0.1:8001:8001
+      - 127.0.0.1:8002:8002
     healthcheck:
       test: ["CMD", "kong", "health"]
       interval: 5s
